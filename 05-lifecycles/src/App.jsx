@@ -1,8 +1,16 @@
 import { Component } from 'react';
 
 import Modal from 'components/Modal/Modal';
+import Select from 'components/Select';
 
 const POKEMONS = 'pokemons';
+
+const STATES = {
+  idle: 'idle',
+  success: 'success',
+  error: 'error',
+  pending: 'pending',
+};
 
 class App extends Component {
   constructor(props) {
@@ -11,51 +19,25 @@ class App extends Component {
       pokemons: [],
       onePokemon: null,
       name: '',
+      status: STATES.idle,
     };
-    console.log('constructor-------------');
-  }
-  // state = {
-  //   value: [],
-  //   onePokemon: null,
-  //   name: this.props.init,
-  // };
-
-  static defaultProps = {};
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    console.log('getDerivedStateFromProps}]]]]]]]');
-    return prevState;
-    // return prevState.name !== nextProps.init
-    //   ? { ...prevState, name: nextProps.init }
-    //   : prevState;
   }
 
   componentDidMount() {
-    console.log('componentDidMount++++++++++++++++');
     const parsedPokemons = JSON.parse(
       localStorage.getItem(POKEMONS)
     );
+
     parsedPokemons
       ? this.setState({ pokemons: parsedPokemons })
       : this.myMethod();
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    // nextProps=this.props, nextState=this.state
-    console.log('shouldComponentUpdate!!!!!!!!!!!!!!!');
     return true;
   }
 
-  getSnapshotBeforeUpdate(prevProps, prevState) {
-    const snapshot = this.state.pokemons.length - 2;
-    return snapshot;
-  }
-
   componentDidUpdate(prevProps, prevState, snapshot) {
-    console.log(
-      'componetDidUpdate out if   ??????????????',
-      snapshot
-    );
     const nextPokemons = this.state.pokemons;
     const prevPokemons = prevState.pokemons;
     if (prevPokemons !== nextPokemons && snapshot === 20) {
@@ -66,13 +48,17 @@ class App extends Component {
     }
   }
 
+  setPokemon = (name, resetSelect) => {
+    this.setState({ name });
+    resetSelect();
+  };
+
   myMethod = () => {
-    // https://pokeapi.co/api/v2/berry-firmness/1
     fetch('https://pokeapi.co/api/v2/pokemon/')
       .then((res) => res.json())
       .then((res) => {
-        console.log('res>>>>>>>>>>>>>>>>>>>>>>>', res);
         this.setState({ pokemons: res.results });
+        console.log(res.results);
       })
       .finally(() => {
         setTimeout(() => {
@@ -85,18 +71,14 @@ class App extends Component {
   };
 
   closeModal = () => {
-    console.log('close');
     this.setState({ name: '' });
   };
 
   render() {
-    console.log('render>>>>');
-    // console.log(this.state);
-    // const { findPokemon } = this;
     const { pokemons, name } = this.state;
     return (
       <>
-        {name ? (
+        {/* {name ? (
           <Modal name={name} closeModal={this.closeModal} />
         ) : (
           <>
@@ -112,26 +94,18 @@ class App extends Component {
                         this.setState({ name: el.name })
                       }>
                       <p>{el.name}</p>
-                      {/* <img
-                        src={webformatURL}
-                        alt='alt'
-                        width='300'
-                      /> */}
                     </li>
                   ))
                 : null}
-              {/* {this.state.value.map(({ webformatURL, id }) => (
-                <li key={id}>
-                  <img
-                    src={webformatURL}
-                    alt='alt'
-                    width='300'
-                  />
-                </li>
-              ))} */}
             </ul>
           </>
-        )}
+        )} */}
+
+        <Select
+          pokemons={pokemons}
+          setPokemon={this.setPokemon}
+        />
+        <Modal name={name} />
       </>
     );
   }

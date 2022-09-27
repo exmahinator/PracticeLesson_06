@@ -9,8 +9,9 @@ class Modal extends Component {
       .then((res) => res.json())
       .then((res) => {
         this.setState({
-          onePokemon: res.sprites.front_default,
+          onePokemon: res.sprites?.front_default,
         });
+        console.log(res);
       });
   };
 
@@ -27,6 +28,12 @@ class Modal extends Component {
       'keydown',
       this.props.closeModal
     );
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.name !== this.props.name) {
+      this.setState({ name: this.props.name });
+    }
   }
 
   render() {
